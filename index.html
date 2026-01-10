@@ -141,7 +141,10 @@
         }
 
         #search-input,
-        #project-filter {
+        #type-filter,
+        #country-filter,
+        #cultural-group-filter,
+        #year-filter {
             padding: 5px;
             font-size: 16px;
             margin-right: 10px;
@@ -304,7 +307,7 @@
 
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'Tab1')" id="defaultOpen">Search for a sound</button>
-        <button class="tablinks" onclick="openTab(event, 'Tab2')">Select a sound project</button>
+        <button class="tablinks" onclick="openTab(event, 'Tab2')">Filter sounds</button>
     </div>
 
     <div id="Tab1" class="tabcontent">
@@ -320,25 +323,27 @@
     </div>
 
     <div id="Tab2" class="tabcontent">
-        <br> <label for="project-filter">Filter by project:</label>
-        <select id="project-filter">
+        <br>
+        <label for="type-filter">Type:</label>
+        <select id="type-filter">
             <option value="all">All</option>
-            <option value="Autumn25">Autumn Project 2025</option>
-            <option value="Future Cities">Future Cities</option>
-            <option value="Migration Sounds">Migration Sounds</option>
-            <option value="Music for Sleep">Music for Sleep</option>
-            <option value="Obsolete Sounds">Obsolete Sounds</option>
-            <option value="Polar Sounds">Polar Sounds</option>
-            <option value="Protest and Politics">Protest and Politics</option>
-            <option value="Sacred Spaces">Sacred Spaces</option>
-            <option value="Heritage">Sonic Heritage</option>
-            <option value="Sounding Nature">Sounding Nature</option>
-            <option value="Spring25">Spring Project 25</option>
-            <option value="StayHomeSounds">Stay Home Sounds</option>
-            <option value="Until We Travel">Until We Travel</option>
-            <option value="Well-Being Cities">Well-Being Cities</option>
-            <option value="Yellowstone">Yellowstone</option>
+        </select>
+        
+        <label for="country-filter">Country:</label>
+        <select id="country-filter">
+            <option value="all">All</option>
+        </select><br><br>
+        
+        <label for="cultural-group-filter">Cultural group:</label>
+        <select id="cultural-group-filter">
+            <option value="all">All</option>
+        </select>
+        
+        <label for="year-filter">Year:</label>
+        <select id="year-filter">
+            <option value="all">All</option>
         </select><br>
+        
         <div id="filter">
             <button id="reset-filters">Reset filters</button>
         </div>
@@ -480,6 +485,7 @@
                     loadTrack(currentTrackIndex, 'city'); // Load the first track as a country track
                     updateTrackCount();
                     displayTrackList();
+                    populateFilterDropdowns();
                 })
                 .catch(error => console.error('Error loading JSON:', error));
 
@@ -491,7 +497,10 @@
             document.getElementById('search-input').addEventListener('keydown', function (event) { if (event.key === 'Enter') { filterTracks(); } });
             document.getElementById('reset-filters').addEventListener('click', resetFilters);
             document.getElementById('reset-filters-seach').addEventListener('click', resetFilters);
-            document.getElementById('project-filter').addEventListener('change', filterTracksByProject);
+            document.getElementById('type-filter').addEventListener('change', filterTracksByMetadata);
+            document.getElementById('country-filter').addEventListener('change', filterTracksByMetadata);
+            document.getElementById('cultural-group-filter').addEventListener('change', filterTracksByMetadata);
+            document.getElementById('year-filter').addEventListener('change', filterTracksByMetadata);
 
             // document.getElementById('soundInfo').addEventListener('click', toggleSoundDescription);
             // document.getElementById('remixInfo').addEventListener('click', toggleRemixDescription);
@@ -674,8 +683,11 @@
             document.getElementById('search-input').value = '';
             const noResults = document.getElementById('no-results');
 
-            const selectedProject = document.getElementById('project-filter');
-            selectedProject.selectedIndex = 0;
+            document.getElementById('type-filter').selectedIndex = 0;
+            document.getElementById('country-filter').selectedIndex = 0;
+            document.getElementById('cultural-group-filter').selectedIndex = 0;
+            document.getElementById('year-filter').selectedIndex = 0;
+            
             filteredTracks = tracks;
             currentTrackIndex = 0;
             loadTrack(currentTrackIndex, 'city'); // Load the first track of the full list
@@ -685,27 +697,80 @@
             closeDescriptions();
         }
 
-        function filterTracksByProject() {
-            const selectedProject = document.getElementById('project-filter').value;
-            if (selectedProject === 'all') {
-                filteredTracks = tracks;
-            } else {
-                // filteredTracks = tracks.filter(track => track.Projects === selectedProject);
-                filteredTracks = tracks.filter(track => track.Projects.includes(selectedProject));
-                // filteredTracks = tracks.filter(track => {
-                //     const searchMatch = track.Projects.toLowerCase().includes(selectedProject);
-                //     return searchMatch;
-                // });
-            }
-            // console.log(filteredTracks.length);
+        function populateFilterDropdowns() {
+            const types = new Set();
+            const countries = new Set();
+            const culturalGroups = new Set();
+            const years = new Set();
+            
+            console.log('Populating filters, tracks count:', tracks.length);
+            
+            tracks.forEach(track => {
+                if (track.type) types.add(track.type);
+                if (track.country) countries.add(track.country);
+                if (track.cultural_group) culturalGroups.add(track.cultural_group);
+                if (track.year) years.add(track.year);
+            });
+            
+            console.log('Types:', Array.from(types));
+            console.log('Countries:', Array.from(countries));
+            console.log('Cultural groups:', Array.from(culturalGroups));
+            console.log('Years:', Array.from(years));
+            
+            const typeSelect = document.getElementById('type-filter');
+            Array.from(types).sort().forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                typeSelect.appendChild(option);
+            });
+            
+            const countrySelect = document.getElementById('country-filter');
+            Array.from(countries).sort().forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            });
+            
+            const culturalGroupSelect = document.getElementById('cultural-group-filter');
+            Array.from(culturalGroups).sort().forEach(group => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                culturalGroupSelect.appendChild(option);
+            });
+            
+            const yearSelect = document.getElementById('year-filter');
+            Array.from(years).sort((a, b) => b - a).forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+        }
+        
+        function filterTracksByMetadata() {
+            const selectedType = document.getElementById('type-filter').value;
+            const selectedCountry = document.getElementById('country-filter').value;
+            const selectedCulturalGroup = document.getElementById('cultural-group-filter').value;
+            const selectedYear = document.getElementById('year-filter').value;
+            
+            filteredTracks = tracks.filter(track => {
+                const typeMatch = selectedType === 'all' || track.type === selectedType;
+                const countryMatch = selectedCountry === 'all' || track.country === selectedCountry;
+                const culturalGroupMatch = selectedCulturalGroup === 'all' || track.cultural_group === selectedCulturalGroup;
+                const yearMatch = selectedYear === 'all' || track.year == selectedYear;
+                
+                return typeMatch && countryMatch && culturalGroupMatch && yearMatch;
+            });
+            
             currentTrackIndex = 0;
-            loadTrack(currentTrackIndex, 'city'); // Load the first track of the filtered list
-            // console.log("After loadtrack");
+            if (filteredTracks.length > 0) {
+                loadTrack(currentTrackIndex, 'city');
+            }
             updateTrackCount();
-            // console.log("After updte track count");
             displayTrackList();
-            // console.log("After display tracklist");
-            // toggleTracklistContainer();
         }
 
         function updateTrackCount() {
@@ -734,12 +799,18 @@
             // Update the label above the tracklist
             const labelDiv = document.querySelector('[data-tracklist-label]');
             const searchText = document.getElementById('search-input').value.trim();
-            const projectValue = document.getElementById('project-filter').value;
+            const typeValue = document.getElementById('type-filter').value;
+            const countryValue = document.getElementById('country-filter').value;
+            const culturalGroupValue = document.getElementById('cultural-group-filter').value;
+            const yearValue = document.getElementById('year-filter').value;
+            
+            const hasActiveFilter = typeValue !== "all" || countryValue !== "all" || 
+                                   culturalGroupValue !== "all" || yearValue !== "all";
 
             if (searchText.length > 0) {
                 labelDiv.textContent = "Search results:";
-            } else if (projectValue !== "all") {
-                labelDiv.textContent = "Project sounds:";
+            } else if (hasActiveFilter) {
+                labelDiv.textContent = "Filtered sounds:";
             } else {
                 labelDiv.textContent = "Latest sounds:";
             }
