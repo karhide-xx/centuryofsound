@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMPlayer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&amp;family=Roboto:wght@100&amp;display=swap"
+        rel="stylesheet">
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <style>
+        body {
+            /* font-family: Arial, sans-serif; */
+            font-family: 'Josefin Sans', sans-serif;
+        }
+
+        .red {
+            color: #9d0e1c;
+        }
+
+        #player-container,
+        #player-container-remix {
+            display: flex;
+            align-items: center;
+            padding: 5px;
+        }
+
+        .player {
+            padding: 15px;
+            background-color: #f1f1f1;
+            margin: 10px 0 10px;
+            border-radius: 15px;
+        }
+
+        #play-container,
+        #play-remix-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 105px
+        }
+
+        #play-bg,
+        #play-remix-bg {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 1;
+        }
+
+        #play,
+        #playRemix {
+            margin-right: 10px;
+            padding: 10px 20px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 2;
+            background: transparent;
+        }
+
+        #play,
+        #playRemix {
+            margin-right: 10px;
+            padding: 10px 20px;
+            font-size: 36px;
+            cursor: pointer;
+            color: #9d0e1c;
+
+        }
+
+        #waveform,
+        #waveformremix {
+            flex-grow: 1;
+        }
+
+        #controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #filter {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        button {
+            margin: 10px 5px;
+            padding: 7px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #9d0e1c;
+            color: #FFF;
+            border: 2px solid #9d0e1c;
+            border-radius: 24px;
+        }
+
+        .transparent-button {
+            background-color: transparent;
+            border: transparent;
+            /* Optional: Add a border */
+            color: #9d0e1c;
+            /* Text color */
+            /* padding: 20px 20px; */
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #track-info {
+            margin-top: 20px;
+        }
+
+        #track-name,
+        #track-artist,
+        #track-name-remix,
+        #track-remix-artist,
+        #track-type,
+        #track-count {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            display: block;
+            margin: 0 auto;
+        }
+
+        #track-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        #filter {
+            margin-top: 3px;
+        }
+
+        #search-input,
+        #project-filter {
+            padding: 5px;
+            font-size: 16px;
+            margin-right: 10px;
+            width: 200px;
+        }
+
+        #tracklist-container {
+            margin-top: 20px;
+            display: block;
+            /* position: fixed; */
+            /* bottom: 0;
+            left: 0; */
+            width: 100%;
+            background-color: #f1f1f1;
+            /* box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5); */
+            overflow-y: scroll;
+            max-height: 200px;
+            border-bottom-right-radius: 15px;
+            border-bottom-left-radius: 15px;
+            margin-top: 0px;
+
+        }
+
+        #info {
+            margin-top: 20px;
+            display: none;
+        }
+
+        #tracklist {
+            list-style-type: none;
+            padding: 10px;
+            margin: 0;
+        }
+
+        #tracklist li {
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        /* Basic styling for the modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+            align-items: flex-end;
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            margin-bottom: 400px;
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #no-results {
+            display: none;
+            color: red;
+        }
+
+        /* Style the tab */
+        .tab {
+            overflow: hidden;
+            /* border: 1px solid #ccc; */
+            background-color: #F7F7F7;
+            border-radius: 15px 15px 0 0;
+        }
+
+        /* Style the buttons inside the tab */
+        .tab button {
+            color: #9d0e1c;
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+            width: 50%;
+            border-radius: 15px 15px 0 0;
+            font-family: 'Josefin Sans', sans-serif;
+            margin: 0;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+            background-color: #F7F7F7;
+        }
+
+        /* Create an active/current tablink class */
+        .tab button.active {
+            background-color: #f1f1f1;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 25px 12px;
+            border: 1px solid #f1f1f1;
+            border-top: none;
+            background-color: #f1f1f1;
+            /* border-radius: 0 0 15px 15px; */
+            height: 140px;
+            margin-bottom: 0;
+            /* Remove bottom margin */
+            padding-bottom: 0;
+        }
+
+        @media screen and (min-width: 485px) {
+            .tabcontent {
+                height: 110px;
+            }
+
+            #search-input,
+            #project-filter {
+
+                width: 300px;
+            }
+        }
+
+        .highlighted {
+            color: #9d0e1c;
+            font-weight: bold;
+            /* background: #ffeaea; */
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Tab1')" id="defaultOpen">Search for a sound</button>
+        <button class="tablinks" onclick="openTab(event, 'Tab2')">Select a sound project</button>
+    </div>
+
+    <div id="Tab1" class="tabcontent">
+        <input type="text" id="search-input" placeholder="Search by country, artist, keyword etc.">
+        <button id="search-button">Search</button><br>
+        <div id="no-results">
+            No results found for this search
+        </div>
+        <div id="filter">
+            <button id="reset-filters-seach">Reset filters</button>
+        </div>
+
+    </div>
+
+    <div id="Tab2" class="tabcontent">
+        <br> <label for="project-filter">Filter by project:</label>
+        <select id="project-filter">
+            <option value="all">All</option>
+            <option value="Autumn25">Autumn Project 2025</option>
+            <option value="Future Cities">Future Cities</option>
+            <option value="Migration Sounds">Migration Sounds</option>
+            <option value="Music for Sleep">Music for Sleep</option>
+            <option value="Obsolete Sounds">Obsolete Sounds</option>
+            <option value="Polar Sounds">Polar Sounds</option>
+            <option value="Protest and Politics">Protest and Politics</option>
+            <option value="Sacred Spaces">Sacred Spaces</option>
+            <option value="Heritage">Sonic Heritage</option>
+            <option value="Sounding Nature">Sounding Nature</option>
+            <option value="Spring25">Spring Project 25</option>
+            <option value="StayHomeSounds">Stay Home Sounds</option>
+            <option value="Until We Travel">Until We Travel</option>
+            <option value="Well-Being Cities">Well-Being Cities</option>
+            <option value="Yellowstone">Yellowstone</option>
+        </select><br>
+        <div id="filter">
+            <button id="reset-filters">Reset filters</button>
+        </div>
+    </div>
+
+    <div data-tracklist-label
+        style="font-weight: bold; color: #9d0e1c; margin: 0; background-color: #f1f1f1; padding: 8px 0 1px 10px; width: 100%; box-sizing: border-box; text-align: left; ">
+        Latest sounds:
+    </div>
+    <div id="tracklist-container" style="margin-top: 0; border-top-left-radius: 0; border-top-right-radius: 0;">
+        <ul id="tracklist"></ul>
+    </div>
+
+    <!-- <h1>CMPlayer</h1> -->
+    <div id="city" class="player">
+        <span class="red" id="track-name"></span> <br>
+        <div id="player-container">
+            <div id="play-container"> <img src="https://audioboom.com/i/41217314" alt="Play Button Background"
+                    id="play-bg">
+                <button id="play" class="transparent-button"><i id="pSound" class="fas fa-play"></i></button>
+            </div>
+            <div id="waveform"></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="red" id="track-artist"></span> <!--<button id="soundInfo">More info</button>-->
+            <!-- Button to open the modal -->
+            <button id="openModalBtn" class="transparent-button"><i
+                    class="fa-solid fa-circle-info fa-2x red"></i></button>
+        </div>
+        <div id="soundDetails" style="display: none;">
+            <p id="soundDescription"></p>
+        </div>
+    </div>
+
+
+    <div id="remix" class="player">
+        <span class="red" id="track-name-remix"></span><br>
+        <div id="player-container-remix">
+            <div id="play-remix-container">
+                <img src="https://audioboom.com/i/41217314" alt="Play Button Background" id="play-remix-bg">
+                <button id="playRemix" class="transparent-button"><i id="pRemix" class="fas fa-play"></i></button>
+            </div>
+            <div id="waveformremix"></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+
+            <span class="red" id="track-remix-artist"></span> <!--<button id="remixInfo">More info</button>-->
+            <!-- Button to open the modal -->
+            <button id="openModalBtn2" class="transparent-button"><i
+                    class="fa-solid fa-circle-info fa-2x red"></i></button>
+        </div>
+        <div id="remixDetails" style="display: none;">
+            <p id="remixDescription"></p>
+        </div>
+    </div>
+    <div id="no-remix">
+        <p>This recording has no accompanying memory sound</p>
+    </div>
+    <div id="controls">
+        <button class="controls" id="prev"><i class="fa-solid fa-backward"></i></button>
+        <button class="controls" id="next"><i class="fa-solid fa-forward"></i></button>
+    </div>
+    <div id="track-info">
+        <!-- <img id="track-image" src="" alt="Track Image"> -->
+        <!-- <p id="track-name"></p>
+        <p id="track-artist"></p>
+        <p id="track-remix-artist"></p> -->
+        <!-- <p id="track-type"></p> -->
+        <!-- <p id="track-count"></p> -->
+    </div>
+
+
+
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="c1">This is a simple modal example.</p>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <!-- <script src="https://unpkg.com/wavesurfer.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/wavesurfer.js"></script>
+
+    <!-- <script src="script.js"></script> -->
+    <script>
+
+        let tracks = [];
+        let filteredTracks = [];
+        let currentTrackIndex = 0;
+
+        function httpGetAsync(theUrl, callback) {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                    callback(xmlHttp.responseText);
+            }
+            xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+            xmlHttp.send(null);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('Supporting files/Century_select.json')
+                .then(response => response.json())
+                .then(data => {
+                    // Transform the data to match expected format
+                    tracks = data.map(item => {
+                        const paddedNum = String(item.Number).padStart(3, '0');
+                        return {
+                            id: item.Number,
+                            Number: item.Number,
+                            city_title: item["City title"],
+                            city_artist: item["City artist"],
+                            city_description: item["City description"],
+                            city_mp3: `mp3/${paddedNum}_pitt`,
+                            city_image: `mp3/${paddedNum}.jpg`,
+                            memory_title: item["Memory title"],
+                            memory_artist: item["Memory artist"],
+                            memory_description: item["Memory description"],
+                            memory_mp3: `mp3/${paddedNum}_remix`,
+                            country: item.Country,
+                            cultural_group: item["Cultural group"],
+                            year: item.Year,
+                            type: item["Type "]
+                        };
+                    });
+                    tracks = tracks.sort((a, b) => a.Number - b.Number);
+                    filteredTracks = tracks;
+                    currentTrackIndex = 0;
+
+                    loadTrack(currentTrackIndex, 'city'); // Load the first track as a country track
+                    updateTrackCount();
+                    displayTrackList();
+                })
+                .catch(error => console.error('Error loading JSON:', error));
+
+            document.getElementById('play').addEventListener('click', togglePlayPause);
+            document.getElementById('playRemix').addEventListener('click', togglePlayPauseRemix);
+            document.getElementById('prev').addEventListener('click', playPreviousTrack);
+            document.getElementById('next').addEventListener('click', playNextTrack);
+            document.getElementById('search-button').addEventListener('click', filterTracks);
+            document.getElementById('search-input').addEventListener('keydown', function (event) { if (event.key === 'Enter') { filterTracks(); } });
+            document.getElementById('reset-filters').addEventListener('click', resetFilters);
+            document.getElementById('reset-filters-seach').addEventListener('click', resetFilters);
+            document.getElementById('project-filter').addEventListener('change', filterTracksByProject);
+
+            // document.getElementById('soundInfo').addEventListener('click', toggleSoundDescription);
+            // document.getElementById('remixInfo').addEventListener('click', toggleRemixDescription);
+
+        });
+
+        const wavesurfer = WaveSurfer.create({
+            container: '#waveform',
+            waveColor: '#9d0e1c',
+            progressColor: '#9d0e1c',
+        });
+
+        const wavesurferremix = WaveSurfer.create({
+            container: '#waveformremix',
+            waveColor: '#9d0e1c',
+            progressColor: '#9d0e1c',
+        });
+
+        function loadTrack(index, type) {
+            const remixcont = document.getElementById('play-remix-container');
+            const remixcontMoreInfo = document.getElementById('play-remix-container');
+            const remixDiv = document.getElementById('remix');
+            const noremixDiv = document.getElementById('no-remix');
+
+            const track = filteredTracks[index];
+
+            const url = track.city_mp3;
+            const title = track.city_title;
+            const artist = track.city_artist;
+            const image = track.city_image;
+            const urlremix = track.memory_mp3;
+
+            // Load local MP3 file
+            wavesurfer.load(url + ".mp3");
+            document.getElementById('track-artist').textContent = "Recording by " + artist;
+
+            // Set city sound details
+            var doc = document;
+            doc.getElementById('track-name').innerText = title;
+            doc.getElementById('soundDescription').innerText = track.city_description || "";
+            doc.getElementById('play-bg').setAttribute('src', image);
+
+            // Handle memory/remix track
+            if (track.memory_mp3 != "" && track.memory_title) {
+                remixDiv.style.display = 'block';
+                noremixDiv.style.display = 'none';
+
+                wavesurferremix.load(urlremix + ".mp3");
+                document.getElementById('track-remix-artist').textContent = "Composition by " + track.memory_artist;
+
+                doc.getElementById('track-name-remix').innerText = track.memory_title;
+                doc.getElementById('remixDescription').innerText = track.memory_description || "";
+                doc.getElementById('play-remix-bg').setAttribute('src', image);
+            }
+            else {
+                remixDiv.style.display = 'none';
+                noremixDiv.style.display = 'block';
+                wavesurferremix.empty();
+                document.getElementById('track-remix-artist').textContent = "";
+
+                doc.getElementById('track-name-remix').innerText = "This recording has no accompanying memory sound";
+                doc.getElementById('remixDescription').innerText = "This recording has no accompanying memory sound";
+            }
+
+            closeDescriptions();
+        }
+        function jsonToHtml(jsonString) {
+            const replacements = {
+                '&#39;': "'",
+                '&#34;': "'",
+                '&quot;': '"',
+                '&amp;': '&',
+                '&lt;': '<',
+                '&gt;': '>'
+            };
+
+            let result = jsonString;
+
+            for (const entity in replacements) {
+                result = result.replace(new RegExp(entity, 'g'), replacements[entity]);
+            }
+
+            return result;
+        }
+
+        function togglePlayPause() {
+            if (wavesurfer.isPlaying()) {
+                wavesurfer.pause();
+                document.getElementById('pSound').className = 'fas fa-play';
+            } else {
+                wavesurfer.play();
+                document.getElementById('pSound').className = 'fas fa-pause';
+                if (wavesurferremix.isPlaying()) {
+                    wavesurferremix.pause();
+                    document.getElementById('pRemix').className = 'fas fa-play';
+                }
+            }
+        }
+
+        function togglePlayPauseRemix() {
+            if (wavesurferremix.isPlaying()) {
+                wavesurferremix.pause();
+                document.getElementById('pRemix').className = 'fas fa-play';
+            } else {
+                wavesurferremix.play();
+                document.getElementById('pRemix').className = 'fas fa-pause';
+                if (wavesurfer.isPlaying()) {
+                    wavesurfer.pause();
+                    document.getElementById('pSound').className = 'fas fa-play';
+                }
+            }
+        }
+
+        function playPreviousTrack() {
+            // currentTrackIndex = (currentTrackIndex + 1) % filteredTracks.length;
+            currentTrackIndex = (currentTrackIndex - 1 + filteredTracks.length) % filteredTracks.length;
+            loadTrack(currentTrackIndex, 'city'); // Change 'country' to 'memory' if you want to play memory tracks
+            wavesurfer.play();
+        }
+
+        function playNextTrack() {
+            // currentTrackIndex = (currentTrackIndex - 1 + filteredTracks.length) % filteredTracks.length;
+            currentTrackIndex = (currentTrackIndex + 1) % filteredTracks.length;
+            loadTrack(currentTrackIndex, 'city'); // Change 'country' to 'memory' if you want to play memory tracks
+            wavesurfer.play();
+        }
+
+        function filterTracks() {
+            const searchText = document.getElementById('search-input').value.toLowerCase();
+            const noResults = document.getElementById('no-results');
+
+            noResults.style.display = 'none';
+            console.log("1: filteredTracks = " + filteredTracks.length);
+            if (filteredTracks.length == 0) {
+                records = tracks.length;
+            }
+            else {
+                records = filteredTracks.length;
+            }
+
+            filteredTracks = tracks.filter(track => {
+                const searchMatch = track.city_artist.toLowerCase().includes(searchText) ||
+                    track.memory_artist.toLowerCase().includes(searchText) ||
+                    track.city_title.toLowerCase().includes(searchText) ||
+                    track.city.toLowerCase().includes(searchText) ||
+                    track.country.toLowerCase().includes(searchText) ||
+                    track.Projects.toLowerCase().includes(searchText);
+                return searchMatch;
+            });
+
+            console.log("2: filteredTracks = " + filteredTracks.length);
+
+            if (filteredTracks.length == 0) {
+                resetFilters();
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+                currentTrackIndex = 0;
+                loadTrack(currentTrackIndex, 'city'); // Load the first track of the filtered list
+                updateTrackCount();
+                displayTrackList();
+                // toggleTracklistContainer();
+                closeDescriptions();
+            }
+
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            const noResults = document.getElementById('no-results');
+
+            const selectedProject = document.getElementById('project-filter');
+            selectedProject.selectedIndex = 0;
+            filteredTracks = tracks;
+            currentTrackIndex = 0;
+            loadTrack(currentTrackIndex, 'city'); // Load the first track of the full list
+            updateTrackCount();
+            displayTrackList();
+            // toggleTracklistContainer();
+            closeDescriptions();
+        }
+
+        function filterTracksByProject() {
+            const selectedProject = document.getElementById('project-filter').value;
+            if (selectedProject === 'all') {
+                filteredTracks = tracks;
+            } else {
+                // filteredTracks = tracks.filter(track => track.Projects === selectedProject);
+                filteredTracks = tracks.filter(track => track.Projects.includes(selectedProject));
+                // filteredTracks = tracks.filter(track => {
+                //     const searchMatch = track.Projects.toLowerCase().includes(selectedProject);
+                //     return searchMatch;
+                // });
+            }
+            // console.log(filteredTracks.length);
+            currentTrackIndex = 0;
+            loadTrack(currentTrackIndex, 'city'); // Load the first track of the filtered list
+            // console.log("After loadtrack");
+            updateTrackCount();
+            // console.log("After updte track count");
+            displayTrackList();
+            // console.log("After display tracklist");
+            // toggleTracklistContainer();
+        }
+
+        function updateTrackCount() {
+            // document.getElementById('track-count').textContent = `Track ${currentTrackIndex + 1} of ${filteredTracks.length}`;
+        }
+
+        // function displayTrackList() {
+        //     const tracklist = document.getElementById('tracklist');
+        //     tracklist.innerHTML = '';
+        //     filteredTracks.forEach((track, index) => {
+        //         const listItem = document.createElement('li');
+        //         listItem.textContent = `${track.city_title} by ${track.city_artist}`;
+        //         listItem.addEventListener('click', () => {
+        //             currentTrackIndex = index;
+        //             loadTrack(currentTrackIndex, 'city');
+        //             wavesurfer.play();
+        //         });
+        //         tracklist.appendChild(listItem);
+        //     });
+        // }
+
+        function displayTrackList() {
+            const tracklist = document.getElementById('tracklist');
+            tracklist.innerHTML = '';
+
+            // Update the label above the tracklist
+            const labelDiv = document.querySelector('[data-tracklist-label]');
+            const searchText = document.getElementById('search-input').value.trim();
+            const projectValue = document.getElementById('project-filter').value;
+
+            if (searchText.length > 0) {
+                labelDiv.textContent = "Search results:";
+            } else if (projectValue !== "all") {
+                labelDiv.textContent = "Project sounds:";
+            } else {
+                labelDiv.textContent = "Latest sounds:";
+            }
+
+            filteredTracks.forEach((track, index) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${jsonToHtml(track.city_title)} by ${jsonToHtml(track.city_artist)}`;
+                if (index === currentTrackIndex) {
+                    listItem.classList.add('highlighted');
+                }
+                listItem.addEventListener('click', () => {
+                    currentTrackIndex = index;
+                    loadTrack(currentTrackIndex, 'city');
+                    wavesurfer.play();
+                    displayTrackList(); // Refresh highlight
+                });
+                tracklist.appendChild(listItem);
+            });
+        }
+
+        // function toggleTracklistContainer() {
+        //     const tracklistContainer = document.getElementById('tracklist-container');
+        //     if (filteredTracks.length < tracks.length) {
+        //         tracklistContainer.style.display = 'block';
+        //     } else {
+        //         tracklistContainer.style.display = 'none';
+        //     }
+        // }
+
+        function toggleSoundDescription() {
+            // const details = document.getElementById('soundDetails');
+            // details.style.dislay = 'block';
+            const container = document.getElementById('soundDetails');
+            if (container.style.display != 'block') {
+                container.style.display = 'block';
+            }
+            else {
+                container.style.display = 'none';
+            }
+        }
+        function toggleRemixDescription() {
+            // const details = document.getElementById('remixDetails');
+            // details.style.dislay = 'block'
+            const container = document.getElementById('remixDetails');
+            if (container.style.display != 'block') {
+                container.style.display = 'block';
+            }
+            else {
+                container.style.display = 'none';
+            }
+        }
+        function closeDescriptions() {
+            const containerSound = document.getElementById('soundDetails');
+            const containerRemix = document.getElementById('remixDetails');
+            containerSound.style.display = 'none';
+            containerRemix.style.display = 'none';
+        }
+
+        // Get the modal
+        var modal = document.getElementById("myModal");
+        var paragraph = document.getElementById("c1");
+        // Get the button that opens the modal
+        var btn = document.getElementById("openModalBtn");
+        var btn2 = document.getElementById("openModalBtn2");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks the button, open the modal 
+        btn.onclick = function () {
+            // paragraph.innerHTML = "Button 1 clicked";
+            paragraph.innerHTML = soundDescription.innerHTML;
+            modal.style.display = "flex";
+        }
+        // When the user clicks the button, open the modal 
+        btn2.onclick = function () {
+            // paragraph.innerHTML = "button 2 clicked";
+            paragraph.innerHTML = remixDescription.innerHTML
+            modal.style.display = "flex";
+        }
+
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+            // modal2.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+
+        }
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
+
+    </script>
+</body>
+
+</html>
