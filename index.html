@@ -531,7 +531,18 @@
             // Set city sound details
             var doc = document;
             doc.getElementById('track-name').innerText = title;
-            doc.getElementById('soundDescription').innerText = track.city_description || "";
+            
+            // Build sound description with additional metadata
+            let descriptionHTML = track.city_description || "";
+            if (track.country || track.cultural_group || track.year || track.type) {
+                descriptionHTML += '<br><br>';
+                if (track.country) descriptionHTML += `<strong>Country:</strong> ${track.country}<br>`;
+                if (track.cultural_group) descriptionHTML += `<strong>Cultural group:</strong> ${track.cultural_group}<br>`;
+                if (track.year) descriptionHTML += `<strong>Year:</strong> ${track.year}<br>`;
+                if (track.type) descriptionHTML += `<strong>Type:</strong> ${track.type}`;
+            }
+            doc.getElementById('soundDescription').innerHTML = descriptionHTML;
+            
             doc.getElementById('play-bg').setAttribute('src', image);
 
             // Handle memory/remix track
@@ -759,10 +770,8 @@
         // }
 
         function toggleSoundDescription() {
-            // const details = document.getElementById('soundDetails');
-            // details.style.dislay = 'block';
             const container = document.getElementById('soundDetails');
-            if (container.style.display != 'block') {
+            if (container.style.display === 'none' || container.style.display === '') {
                 container.style.display = 'block';
             }
             else {
@@ -800,13 +809,13 @@
         // When the user clicks the button, open the modal 
         btn.onclick = function () {
             // paragraph.innerHTML = "Button 1 clicked";
-            paragraph.innerHTML = soundDescription.innerHTML;
+            paragraph.innerHTML = document.getElementById('soundDescription').innerHTML;
             modal.style.display = "flex";
         }
         // When the user clicks the button, open the modal 
         btn2.onclick = function () {
             // paragraph.innerHTML = "button 2 clicked";
-            paragraph.innerHTML = remixDescription.innerHTML
+            paragraph.innerHTML = document.getElementById('remixDescription').innerHTML;
             modal.style.display = "flex";
         }
 
