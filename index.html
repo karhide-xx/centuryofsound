@@ -351,7 +351,7 @@
 
     <div data-tracklist-label
         style="font-weight: bold; color: #9d0e1c; margin: 0; background-color: #f1f1f1; padding: 8px 0 1px 10px; width: 100%; box-sizing: border-box; text-align: left; ">
-        Latest sounds:
+        Select a sound:
     </div>
     <div id="tracklist-container" style="margin-top: 0; border-top-left-radius: 0; border-top-right-radius: 0;">
         <ul id="tracklist"></ul>
@@ -653,12 +653,17 @@
             }
 
             filteredTracks = tracks.filter(track => {
-                const searchMatch = track.city_artist.toLowerCase().includes(searchText) ||
-                    track.memory_artist.toLowerCase().includes(searchText) ||
+                const searchMatch = 
                     track.city_title.toLowerCase().includes(searchText) ||
-                    track.city.toLowerCase().includes(searchText) ||
-                    track.country.toLowerCase().includes(searchText) ||
-                    track.Projects.toLowerCase().includes(searchText);
+                    track.city_artist.toLowerCase().includes(searchText) ||
+                    (track.city_description && track.city_description.toLowerCase().includes(searchText)) ||
+                    (track.memory_title && track.memory_title.toLowerCase().includes(searchText)) ||
+                    (track.memory_artist && track.memory_artist.toLowerCase().includes(searchText)) ||
+                    (track.memory_description && track.memory_description.toLowerCase().includes(searchText)) ||
+                    (track.country && track.country.toLowerCase().includes(searchText)) ||
+                    (track.cultural_group && track.cultural_group.toLowerCase().includes(searchText)) ||
+                    (track.year && track.year.toString().includes(searchText)) ||
+                    (track.type && track.type.toLowerCase().includes(searchText));
                 return searchMatch;
             });
 
