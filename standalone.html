@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMPlayer - Century of Sound</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&amp;family=Roboto:wght@100&amp;display=swap"
+        rel="stylesheet">
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <style>
+        body {
+            /* font-family: Arial, sans-serif; */
+            font-family: 'Josefin Sans', sans-serif;
+        }
+
+        .red {
+            color: #9d0e1c;
+        }
+
+        #player-container,
+        #player-container-remix {
+            display: flex;
+            align-items: center;
+            padding: 5px;
+        }
+
+        .player {
+            padding: 15px;
+            background-color: #f1f1f1;
+            margin: 10px 0 10px;
+            border-radius: 15px;
+        }
+
+        #play-container,
+        #play-remix-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 105px
+        }
+
+        #play-bg,
+        #play-remix-bg {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 1;
+        }
+
+        #play,
+        #playRemix {
+            margin-right: 10px;
+            padding: 10px 20px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 2;
+            background: transparent;
+        }
+
+        #play,
+        #playRemix {
+            margin-right: 10px;
+            padding: 10px 20px;
+            font-size: 36px;
+            cursor: pointer;
+            color: #9d0e1c;
+
+        }
+
+        #waveform,
+        #waveformremix {
+            flex-grow: 1;
+        }
+
+        #controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #filter {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        button {
+            margin: 10px 5px;
+            padding: 7px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #9d0e1c;
+            color: #FFF;
+            border: 2px solid #9d0e1c;
+            border-radius: 24px;
+        }
+
+        .transparent-button {
+            background-color: transparent;
+            border: transparent;
+            /* Optional: Add a border */
+            color: #9d0e1c;
+            /* Text color */
+            /* padding: 20px 20px; */
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #track-info {
+            margin-top: 20px;
+        }
+
+        #track-name,
+        #track-artist,
+        #track-name-remix,
+        #track-remix-artist,
+        #track-type,
+        #track-count {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            display: block;
+            margin: 0 auto;
+        }
+
+        #track-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        #filter {
+            margin-top: 3px;
+        }
+
+        #search-input,
+        #type-filter,
+        #country-filter,
+        #cultural-group-filter,
+        #year-filter {
+            padding: 5px;
+            font-size: 16px;
+            margin-right: 10px;
+            width: 200px;
+        }
+
+        #tracklist-container {
+            margin-top: 20px;
+            display: block;
+            /* position: fixed; */
+            /* bottom: 0;
+            left: 0; */
+            width: 100%;
+            background-color: #f1f1f1;
+            /* box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5); */
+            overflow-y: scroll;
+            max-height: 200px;
+            border-bottom-right-radius: 15px;
+            border-bottom-left-radius: 15px;
+            margin-top: 0px;
+
+        }
+
+        #info {
+            margin-top: 20px;
+            display: none;
+        }
+
+        #tracklist {
+            list-style-type: none;
+            padding: 10px;
+            margin: 0;
+        }
+
+        #tracklist li {
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        /* Basic styling for the modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+            align-items: flex-end;
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            margin-bottom: 400px;
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #no-results {
+            display: none;
+            color: red;
+        }
+
+        /* Style the tab */
+        .tab {
+            overflow: hidden;
+            /* border: 1px solid #ccc; */
+            background-color: #F7F7F7;
+            border-radius: 15px 15px 0 0;
+        }
+
+        /* Style the buttons inside the tab */
+        .tab button {
+            color: #9d0e1c;
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+            width: 50%;
+            border-radius: 15px 15px 0 0;
+            font-family: 'Josefin Sans', sans-serif;
+            margin: 0;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+            background-color: #F7F7F7;
+        }
+
+        /* Create an active/current tablink class */
+        .tab button.active {
+            background-color: #f1f1f1;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 25px 12px;
+            border: 1px solid #f1f1f1;
+            border-top: none;
+            background-color: #f1f1f1;
+            /* border-radius: 0 0 15px 15px; */
+            height: 140px;
+            margin-bottom: 0;
+            /* Remove bottom margin */
+            padding-bottom: 0;
+        }
+
+        @media screen and (min-width: 485px) {
+            .tabcontent {
+                height: 110px;
+            }
+
+            #search-input,
+            #project-filter {
+
+                width: 300px;
+            }
+        }
+
+        .highlighted {
+            color: #9d0e1c;
+            font-weight: bold;
+            /* background: #ffeaea; */
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Tab1')" id="defaultOpen">Search for a sound</button>
+        <button class="tablinks" onclick="openTab(event, 'Tab2')">Filter sounds</button>
+    </div>
+
+    <div id="Tab1" class="tabcontent">
+        <input type="text" id="search-input" placeholder="Search by country, artist, keyword etc.">
+        <button id="search-button">Search</button><br>
+        <div id="no-results">
+            No results found for this search
+        </div>
+        <div id="filter">
+            <button id="reset-filters-seach">Reset filters</button>
+        </div>
+
+    </div>
+
+    <div id="Tab2" class="tabcontent">
+        <br>
+        <label for="type-filter">Type:</label>
+        <select id="type-filter">
+            <option value="all">All</option>
+        </select>
+        
+        <label for="country-filter">Country:</label>
+        <select id="country-filter">
+            <option value="all">All</option>
+        </select><br><br>
+        
+        <label for="cultural-group-filter">Cultural group:</label>
+        <select id="cultural-group-filter">
+            <option value="all">All</option>
+        </select>
+        
+        <label for="year-filter">Year:</label>
+        <select id="year-filter">
+            <option value="all">All</option>
+        </select><br>
+        
+        <div id="filter">
+            <button id="reset-filters">Reset filters</button>
+        </div>
+    </div>
+
+    <div data-tracklist-label
+        style="font-weight: bold; color: #9d0e1c; margin: 0; background-color: #f1f1f1; padding: 8px 0 1px 10px; width: 100%; box-sizing: border-box; text-align: left; ">
+        Select a sound:
+    </div>
+    <div id="tracklist-container" style="margin-top: 0; border-top-left-radius: 0; border-top-right-radius: 0;">
+        <ul id="tracklist"></ul>
+    </div>
+
+    <!-- <h1>CMPlayer</h1> -->
+    <div id="city" class="player">
+        <span class="red" id="track-name"></span> <br>
+        <div id="player-container">
+            <div id="play-container"> <img src="https://audioboom.com/i/41217314" alt="Play Button Background"
+                    id="play-bg">
+                <button id="play" class="transparent-button"><i id="pSound" class="fas fa-play"></i></button>
+            </div>
+            <div id="waveform"></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="red" id="track-artist"></span> <!--<button id="soundInfo">More info</button>-->
+            <!-- Button to open the modal -->
+            <button id="openModalBtn" class="transparent-button"><i
+                    class="fa-solid fa-circle-info fa-2x red"></i></button>
+        </div>
+        <div id="soundDetails" style="display: none;">
+            <p id="soundDescription"></p>
+        </div>
+    </div>
+
+
+    <div id="remix" class="player">
+        <span class="red" id="track-name-remix"></span><br>
+        <div id="player-container-remix">
+            <div id="play-remix-container">
+                <img src="https://audioboom.com/i/41217314" alt="Play Button Background" id="play-remix-bg">
+                <button id="playRemix" class="transparent-button"><i id="pRemix" class="fas fa-play"></i></button>
+            </div>
+            <div id="waveformremix"></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+
+            <span class="red" id="track-remix-artist"></span> <!--<button id="remixInfo">More info</button>-->
+            <!-- Button to open the modal -->
+            <button id="openModalBtn2" class="transparent-button"><i
+                    class="fa-solid fa-circle-info fa-2x red"></i></button>
+        </div>
+        <div id="remixDetails" style="display: none;">
+            <p id="remixDescription"></p>
+        </div>
+    </div>
+    <div id="no-remix">
+        <p>This recording has no accompanying memory sound</p>
+    </div>
+    <div id="controls">
+        <button class="controls" id="prev"><i class="fa-solid fa-backward"></i></button>
+        <button class="controls" id="next"><i class="fa-solid fa-forward"></i></button>
+    </div>
+    <div id="track-info">
+        <!-- <img id="track-image" src="" alt="Track Image"> -->
+        <!-- <p id="track-name"></p>
+        <p id="track-artist"></p>
+        <p id="track-remix-artist"></p> -->
+        <!-- <p id="track-type"></p> -->
+        <!-- <p id="track-count"></p> -->
+    </div>
+
+
+
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="c1">This is a simple modal example.</p>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <!-- <script src="https://unpkg.com/wavesurfer.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/wavesurfer.js"></script>
+
+    <!-- <script src="script.js"></script> -->
+    <script>
+
+        let tracks = [];
+        let filteredTracks = [];
+        let currentTrackIndex = 0;
+
+        function httpGetAsync(theUrl, callback) {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                    callback(xmlHttp.responseText);
+            }
+            xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+            xmlHttp.send(null);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Embedded JSON data
+            const data = [
+  {
+    "Number": 8,
+    "City title": "Bayang men's songs",
+    "City artist": "Sonja Lois MITCHISON",
+    "City description": "From the sound collections of the Pitt Rivers Museum, University of Oxford, being from a collection of reel-to-reel tape recordings of songs and musical instruments made by journalist Lois Mitchison in Cameroon during 1958",
+    "Memory title": "Bayang song",
+    "Memory artist": "Jaspal Singh Bhogal",
+    "Memory description": "This was one of the more difficult pieces I've worked on, although it was enjoyable working through the process. I struggled quite a bit at the beginning, as the field recording has both harmonic & rhythmic structure which varies in tempo quite a bit… so I wasn't sure how to approach this initially.\n\nAfter some thought and a fair bit of trial and error, I decided to pick up my guitar (and play the piano) and simply play along with them without overthinking it too much…so the tempo may be a little rough in places! Guitar & piano simply panned out to left/right, adding some bass/cello towards the end. I tried to match my chords with their harmony and I did feel as if I were joining in with them! I noticed the call and response structure in the field recording, so tried to incorporate this as well at either end of the piece.\n\nI wouldn't say it's very genre-specific, but it's more me joining in with them and it's from the heart. Hopefully it conveys the warmth I felt from listening to the field recording - I hope I have done the Bayang justice in my piece.",
+    "Country": "Cameroon",
+    "Cultural group": "Bayang",
+    "Year": 1958,
+    "Type ": "Song"
+  },
+  {
+    "Number": 49,
+    "City title": "Chocó panpipe music",
+    "City artist": "Jonathan AMBACHE and Richard SAUMAREZ SMITH",
+    "City description": "From the sound collections of the Pitt Rivers Museum, University of Oxford, being from a collection of reel-to-reel tape recordings of Chocó music and soundscapes made by students Jonathan Ambache and Richard Saumarez Smith in Colombia in 1965",
+    "Memory title": "Little train",
+    "Memory artist": "Museleon",
+    "Memory description": "From the moment that I first heard this soundfile, I thought the flute sounded very much like a little steam train. At first, I researched about Columbian trains and found there is a tourist train to the Salt Cathedral of Zipaquirá, an underground Roman Catholic church built within the tunnels of a salt mine, 200 metres (660 ft) underground in a halite mountain near the city of Zipaquirá, in Cundinamarca, Colombia.\nI wanted the listener to hear the original recording in the track but did edit the order, tempo and pitch to give an idea of the effort of the train on its journey. I then added a rhythmic synth line to give a feeling of travel and sourced some steam train sounds from freesound. Towards the end of the track I layered other synth lines and a church organ as the train reaches its destination, the salt cathedral. \n\nHowever, the more I worked on the track, It brought back memories of a journey I made many years ago on the little train that takes people up Yr Wyddfa. So a little nod to this is the tune to Hen Wlad Fy Nhadau that comes in at the end of the track.\n\nMany of the tracks and audio pieces I create are based on memories and this is no exception. From the moment that I first heard this soundfile, I thought it sounded very much like a little steam train chugging up a very steep mountainside, whether in South America or my homeland, Wales.",
+    "Country": "Colombia",
+    "Cultural group": "Chocó",
+    "Year": 1965,
+    "Type ": "Music"
+  },
+  {
+    "Number": 65,
+    "City title": "Women singing",
+    "City artist": "Nicholas Justin ALLEN",
+    "City description": "From the sound collections of the Pitt Rivers Museum, University of Oxford, being from a collection of reel-to-reel recordings of music and spoken language (principally Thulung Rai) made by anthropologist Nicholas Allen in Nepal and India between 1970 and 1981",
+    "Memory title": "Bari women chanting",
+    "Memory artist": "Paul Beaudoin",
+    "Memory description": "While as Artist-in-residence at the Alice Boner Institute in Varanasi, India, I was lucky to hear chanting every day - nearly all day. The chanting is sacred - but it is also joyous. I wanted to capture that.",
+    "Country": "India",
+    "Cultural group": "Kinnauri",
+    "Year": 1981,
+    "Type ": "Song"
+  }
+];
+            
+            // Transform the data to match expected format
+            tracks = data.map(item => {
+                const paddedNum = String(item.Number).padStart(3, '0');
+                return {
+                    id: item.Number,
+                    Number: item.Number,
+                    city_title: item["City title"],
+                    city_artist: item["City artist"],
+                    city_description: item["City description"],
+                    city_mp3: `mp3/${paddedNum}_pitt`,
+                    city_image: `mp3/${paddedNum}.jpg`,
+                    memory_title: item["Memory title"],
+                    memory_artist: item["Memory artist"],
+                    memory_description: item["Memory description"],
+                    memory_mp3: `mp3/${paddedNum}_remix`,
+                    country: item.Country,
+                    cultural_group: item["Cultural group"],
+                    year: item.Year,
+                    type: item["Type "]
+                };
+            });
+            tracks = tracks.sort((a, b) => a.Number - b.Number);
+            filteredTracks = tracks;
+            currentTrackIndex = 0;
+
+            loadTrack(currentTrackIndex, 'city'); // Load the first track as a country track
+            updateTrackCount();
+            displayTrackList();
+            populateFilterDropdowns();
+
+            document.getElementById('play').addEventListener('click', togglePlayPause);
+            document.getElementById('playRemix').addEventListener('click', togglePlayPauseRemix);
+            document.getElementById('prev').addEventListener('click', playPreviousTrack);
+            document.getElementById('next').addEventListener('click', playNextTrack);
+            document.getElementById('search-button').addEventListener('click', filterTracks);
+            document.getElementById('search-input').addEventListener('keydown', function (event) { if (event.key === 'Enter') { filterTracks(); } });
+            document.getElementById('reset-filters').addEventListener('click', resetFilters);
+            document.getElementById('reset-filters-seach').addEventListener('click', resetFilters);
+            document.getElementById('type-filter').addEventListener('change', filterTracksByMetadata);
+            document.getElementById('type-filter').addEventListener('change', filterTracksByMetadata);
+            document.getElementById('country-filter').addEventListener('change', filterTracksByMetadata);
+            document.getElementById('cultural-group-filter').addEventListener('change', filterTracksByMetadata);
+            document.getElementById('year-filter').addEventListener('change', filterTracksByMetadata);
+
+            // document.getElementById('soundInfo').addEventListener('click', toggleSoundDescription);
+            // document.getElementById('remixInfo').addEventListener('click', toggleRemixDescription);
+
+        });
+
+        const wavesurfer = WaveSurfer.create({
+            container: '#waveform',
+            waveColor: '#9d0e1c',
+            progressColor: '#9d0e1c',
+        });
+
+        const wavesurferremix = WaveSurfer.create({
+            container: '#waveformremix',
+            waveColor: '#9d0e1c',
+            progressColor: '#9d0e1c',
+        });
+
+        function loadTrack(index, type) {
+            const remixcont = document.getElementById('play-remix-container');
+            const remixcontMoreInfo = document.getElementById('play-remix-container');
+            const remixDiv = document.getElementById('remix');
+            const noremixDiv = document.getElementById('no-remix');
+
+            const track = filteredTracks[index];
+
+            const url = track.city_mp3;
+            const title = track.city_title;
+            const artist = track.city_artist;
+            const image = track.city_image;
+            const urlremix = track.memory_mp3;
+
+            // Load local MP3 file
+            wavesurfer.load(url + ".mp3");
+            document.getElementById('track-artist').textContent = "Recording by " + artist;
+
+            // Set city sound details
+            var doc = document;
+            doc.getElementById('track-name').innerText = title;
+            
+            // Build sound description with additional metadata
+            let descriptionHTML = track.city_description || "";
+            if (track.country || track.cultural_group || track.year || track.type) {
+                descriptionHTML += '<br><br>';
+                if (track.country) descriptionHTML += `<strong>Country:</strong> ${track.country}<br>`;
+                if (track.cultural_group) descriptionHTML += `<strong>Cultural group:</strong> ${track.cultural_group}<br>`;
+                if (track.year) descriptionHTML += `<strong>Year:</strong> ${track.year}<br>`;
+                if (track.type) descriptionHTML += `<strong>Type:</strong> ${track.type}`;
+            }
+            doc.getElementById('soundDescription').innerHTML = descriptionHTML;
+            
+            doc.getElementById('play-bg').setAttribute('src', image);
+
+            // Handle memory/remix track
+            if (track.memory_mp3 != "" && track.memory_title) {
+                remixDiv.style.display = 'block';
+                noremixDiv.style.display = 'none';
+
+                wavesurferremix.load(urlremix + ".mp3");
+                document.getElementById('track-remix-artist').textContent = "Composition by " + track.memory_artist;
+
+                doc.getElementById('track-name-remix').innerText = track.memory_title;
+                doc.getElementById('remixDescription').innerText = track.memory_description || "";
+                doc.getElementById('play-remix-bg').setAttribute('src', image);
+            }
+            else {
+                remixDiv.style.display = 'none';
+                noremixDiv.style.display = 'block';
+                wavesurferremix.empty();
+                document.getElementById('track-remix-artist').textContent = "";
+
+                doc.getElementById('track-name-remix').innerText = "This recording has no accompanying memory sound";
+                doc.getElementById('remixDescription').innerText = "This recording has no accompanying memory sound";
+            }
+
+            closeDescriptions();
+        }
+        function jsonToHtml(jsonString) {
+            const replacements = {
+                '&#39;': "'",
+                '&#34;': "'",
+                '&quot;': '"',
+                '&amp;': '&',
+                '&lt;': '<',
+                '&gt;': '>'
+            };
+
+            let result = jsonString;
+
+            for (const entity in replacements) {
+                result = result.replace(new RegExp(entity, 'g'), replacements[entity]);
+            }
+
+            return result;
+        }
+
+        function togglePlayPause() {
+            if (wavesurfer.isPlaying()) {
+                wavesurfer.pause();
+                document.getElementById('pSound').className = 'fas fa-play';
+            } else {
+                wavesurfer.play();
+                document.getElementById('pSound').className = 'fas fa-pause';
+                if (wavesurferremix.isPlaying()) {
+                    wavesurferremix.pause();
+                    document.getElementById('pRemix').className = 'fas fa-play';
+                }
+            }
+        }
+
+        function togglePlayPauseRemix() {
+            if (wavesurferremix.isPlaying()) {
+                wavesurferremix.pause();
+                document.getElementById('pRemix').className = 'fas fa-play';
+            } else {
+                wavesurferremix.play();
+                document.getElementById('pRemix').className = 'fas fa-pause';
+                if (wavesurfer.isPlaying()) {
+                    wavesurfer.pause();
+                    document.getElementById('pSound').className = 'fas fa-play';
+                }
+            }
+        }
+
+        function playPreviousTrack() {
+            // currentTrackIndex = (currentTrackIndex + 1) % filteredTracks.length;
+            currentTrackIndex = (currentTrackIndex - 1 + filteredTracks.length) % filteredTracks.length;
+            loadTrack(currentTrackIndex, 'city'); // Change 'country' to 'memory' if you want to play memory tracks
+            wavesurfer.play();
+        }
+
+        function playNextTrack() {
+            // currentTrackIndex = (currentTrackIndex - 1 + filteredTracks.length) % filteredTracks.length;
+            currentTrackIndex = (currentTrackIndex + 1) % filteredTracks.length;
+            loadTrack(currentTrackIndex, 'city'); // Change 'country' to 'memory' if you want to play memory tracks
+            wavesurfer.play();
+        }
+
+        function filterTracks() {
+            const searchText = document.getElementById('search-input').value.toLowerCase();
+            const noResults = document.getElementById('no-results');
+
+            noResults.style.display = 'none';
+            console.log("1: filteredTracks = " + filteredTracks.length);
+            if (filteredTracks.length == 0) {
+                records = tracks.length;
+            }
+            else {
+                records = filteredTracks.length;
+            }
+
+            filteredTracks = tracks.filter(track => {
+                const searchMatch = 
+                    track.city_title.toLowerCase().includes(searchText) ||
+                    track.city_artist.toLowerCase().includes(searchText) ||
+                    (track.city_description && track.city_description.toLowerCase().includes(searchText)) ||
+                    (track.memory_title && track.memory_title.toLowerCase().includes(searchText)) ||
+                    (track.memory_artist && track.memory_artist.toLowerCase().includes(searchText)) ||
+                    (track.memory_description && track.memory_description.toLowerCase().includes(searchText)) ||
+                    (track.country && track.country.toLowerCase().includes(searchText)) ||
+                    (track.cultural_group && track.cultural_group.toLowerCase().includes(searchText)) ||
+                    (track.year && track.year.toString().includes(searchText)) ||
+                    (track.type && track.type.toLowerCase().includes(searchText));
+                return searchMatch;
+            });
+
+            console.log("2: filteredTracks = " + filteredTracks.length);
+
+            if (filteredTracks.length == 0) {
+                resetFilters();
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+                currentTrackIndex = 0;
+                loadTrack(currentTrackIndex, 'city'); // Load the first track of the filtered list
+                updateTrackCount();
+                displayTrackList();
+                // toggleTracklistContainer();
+                closeDescriptions();
+            }
+
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            const noResults = document.getElementById('no-results');
+
+            document.getElementById('type-filter').selectedIndex = 0;
+            document.getElementById('country-filter').selectedIndex = 0;
+            document.getElementById('cultural-group-filter').selectedIndex = 0;
+            document.getElementById('year-filter').selectedIndex = 0;
+            
+            filteredTracks = tracks;
+            currentTrackIndex = 0;
+            loadTrack(currentTrackIndex, 'city'); // Load the first track of the full list
+            updateTrackCount();
+            displayTrackList();
+            // toggleTracklistContainer();
+            closeDescriptions();
+        }
+
+        function populateFilterDropdowns() {
+            const types = new Set();
+            const countries = new Set();
+            const culturalGroups = new Set();
+            const years = new Set();
+            
+            console.log('Populating filters, tracks count:', tracks.length);
+            
+            tracks.forEach(track => {
+                if (track.type) types.add(track.type);
+                if (track.country) countries.add(track.country);
+                if (track.cultural_group) culturalGroups.add(track.cultural_group);
+                if (track.year) years.add(track.year);
+            });
+            
+            console.log('Types:', Array.from(types));
+            console.log('Countries:', Array.from(countries));
+            console.log('Cultural groups:', Array.from(culturalGroups));
+            console.log('Years:', Array.from(years));
+            
+            const typeSelect = document.getElementById('type-filter');
+            Array.from(types).sort().forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                typeSelect.appendChild(option);
+            });
+            
+            const countrySelect = document.getElementById('country-filter');
+            Array.from(countries).sort().forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            });
+            
+            const culturalGroupSelect = document.getElementById('cultural-group-filter');
+            Array.from(culturalGroups).sort().forEach(group => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                culturalGroupSelect.appendChild(option);
+            });
+            
+            const yearSelect = document.getElementById('year-filter');
+            Array.from(years).sort((a, b) => b - a).forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+        }
+        
+        function filterTracksByMetadata() {
+            const selectedType = document.getElementById('type-filter').value;
+            const selectedCountry = document.getElementById('country-filter').value;
+            const selectedCulturalGroup = document.getElementById('cultural-group-filter').value;
+            const selectedYear = document.getElementById('year-filter').value;
+            
+            filteredTracks = tracks.filter(track => {
+                const typeMatch = selectedType === 'all' || track.type === selectedType;
+                const countryMatch = selectedCountry === 'all' || track.country === selectedCountry;
+                const culturalGroupMatch = selectedCulturalGroup === 'all' || track.cultural_group === selectedCulturalGroup;
+                const yearMatch = selectedYear === 'all' || track.year == selectedYear;
+                
+                return typeMatch && countryMatch && culturalGroupMatch && yearMatch;
+            });
+            
+            currentTrackIndex = 0;
+            if (filteredTracks.length > 0) {
+                loadTrack(currentTrackIndex, 'city');
+            }
+            updateTrackCount();
+            displayTrackList();
+        }
+
+        function updateTrackCount() {
+            // document.getElementById('track-count').textContent = `Track ${currentTrackIndex + 1} of ${filteredTracks.length}`;
+        }
+
+        // function displayTrackList() {
+        //     const tracklist = document.getElementById('tracklist');
+        //     tracklist.innerHTML = '';
+        //     filteredTracks.forEach((track, index) => {
+        //         const listItem = document.createElement('li');
+        //         listItem.textContent = `${track.city_title} by ${track.city_artist}`;
+        //         listItem.addEventListener('click', () => {
+        //             currentTrackIndex = index;
+        //             loadTrack(currentTrackIndex, 'city');
+        //             wavesurfer.play();
+        //         });
+        //         tracklist.appendChild(listItem);
+        //     });
+        // }
+
+        function displayTrackList() {
+            const tracklist = document.getElementById('tracklist');
+            tracklist.innerHTML = '';
+
+            // Update the label above the tracklist
+            const labelDiv = document.querySelector('[data-tracklist-label]');
+            const searchText = document.getElementById('search-input').value.trim();
+            const typeValue = document.getElementById('type-filter').value;
+            const countryValue = document.getElementById('country-filter').value;
+            const culturalGroupValue = document.getElementById('cultural-group-filter').value;
+            const yearValue = document.getElementById('year-filter').value;
+            
+            const hasActiveFilter = typeValue !== "all" || countryValue !== "all" || 
+                                   culturalGroupValue !== "all" || yearValue !== "all";
+
+            if (searchText.length > 0) {
+                labelDiv.textContent = "Search results:";
+            } else if (hasActiveFilter) {
+                labelDiv.textContent = "Filtered sounds:";
+            } else {
+                labelDiv.textContent = "Latest sounds:";
+            }
+
+            filteredTracks.forEach((track, index) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${jsonToHtml(track.city_title)} by ${jsonToHtml(track.city_artist)}`;
+                if (index === currentTrackIndex) {
+                    listItem.classList.add('highlighted');
+                }
+                listItem.addEventListener('click', () => {
+                    currentTrackIndex = index;
+                    loadTrack(currentTrackIndex, 'city');
+                    wavesurfer.play();
+                    displayTrackList(); // Refresh highlight
+                });
+                tracklist.appendChild(listItem);
+            });
+        }
+
+        // function toggleTracklistContainer() {
+        //     const tracklistContainer = document.getElementById('tracklist-container');
+        //     if (filteredTracks.length < tracks.length) {
+        //         tracklistContainer.style.display = 'block';
+        //     } else {
+        //         tracklistContainer.style.display = 'none';
+        //     }
+        // }
+
+        function toggleSoundDescription() {
+            const container = document.getElementById('soundDetails');
+            if (container.style.display === 'none' || container.style.display === '') {
+                container.style.display = 'block';
+            }
+            else {
+                container.style.display = 'none';
+            }
+        }
+        function toggleRemixDescription() {
+            // const details = document.getElementById('remixDetails');
+            // details.style.dislay = 'block'
+            const container = document.getElementById('remixDetails');
+            if (container.style.display != 'block') {
+                container.style.display = 'block';
+            }
+            else {
+                container.style.display = 'none';
+            }
+        }
+        function closeDescriptions() {
+            const containerSound = document.getElementById('soundDetails');
+            const containerRemix = document.getElementById('remixDetails');
+            containerSound.style.display = 'none';
+            containerRemix.style.display = 'none';
+        }
+
+        // Get the modal
+        var modal = document.getElementById("myModal");
+        var paragraph = document.getElementById("c1");
+        // Get the button that opens the modal
+        var btn = document.getElementById("openModalBtn");
+        var btn2 = document.getElementById("openModalBtn2");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks the button, open the modal 
+        btn.onclick = function () {
+            // paragraph.innerHTML = "Button 1 clicked";
+            paragraph.innerHTML = document.getElementById('soundDescription').innerHTML;
+            modal.style.display = "flex";
+        }
+        // When the user clicks the button, open the modal 
+        btn2.onclick = function () {
+            // paragraph.innerHTML = "button 2 clicked";
+            paragraph.innerHTML = document.getElementById('remixDescription').innerHTML;
+            modal.style.display = "flex";
+        }
+
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+            // modal2.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+
+        }
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
+
+    </script>
+</body>
+
+</html>

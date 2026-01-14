@@ -1,0 +1,41 @@
+[
+  {
+    "Number": 8,
+    "City title": "Bayang men's songs",
+    "City artist": "Sonja Lois MITCHISON",
+    "City description": "From the sound collections of the Pitt Rivers Museum, University of Oxford, being from a collection of reel-to-reel tape recordings of songs and musical instruments made by journalist Lois Mitchison in Cameroon during 1958",
+    "Memory title": "Bayang song",
+    "Memory artist": "Jaspal Singh Bhogal",
+    "Memory description": "This was one of the more difficult pieces I’ve worked on, although it was enjoyable working through the process. I struggled quite a bit at the beginning, as the field recording has both harmonic & rhythmic structure which varies in tempo quite a bit… so I wasn’t sure how to approach this initially.\n\nAfter some thought and a fair bit of trial and error, I decided to pick up my guitar (and play the piano) and simply play along with them without overthinking it too much…so the tempo may be a little rough in places! Guitar & piano simply panned out to left/right, adding some bass/cello towards the end. I tried to match my chords with their harmony and I did feel as if I were joining in with them! I noticed the call and response structure in the field recording, so tried to incorporate this as well at either end of the piece.\n\nI wouldn’t say it’s very genre-specific, but it’s more me joining in with them and it’s from the heart. Hopefully it conveys the warmth I felt from listening to the field recording - I hope I have done the Bayang justice in my piece.",
+    "Country": "Cameroon",
+    "Cultural group": "Bayang",
+    "Year": 1958,
+    "Type ": "Song"
+  },
+  {
+    "Number": 49,
+    "City title": "Chocó panpipe music",
+    "City artist": "Jonathan AMBACHE and Richard SAUMAREZ SMITH",
+    "City description": "From the sound collections of the Pitt Rivers Museum, University of Oxford, being from a collection of reel-to-reel tape recordings of Chocó music and soundscapes made by students Jonathan Ambache and Richard Saumarez Smith in Colombia in 1965",
+    "Memory title": "Little train",
+    "Memory artist": "Museleon",
+    "Memory description": "From the moment that I first heard this soundfile, I thought the flute sounded very much like a little steam train. At first, I researched about Columbian trains and found there is a tourist train to the Salt Cathedral of Zipaquirá, an underground Roman Catholic church built within the tunnels of a salt mine, 200 metres (660 ft) underground in a halite mountain near the city of Zipaquirá, in Cundinamarca, Colombia.\nI wanted the listener to hear the original recording in the track but did edit the order, tempo and pitch to give an idea of the effort of the train on its journey. I then added a rhythmic synth line to give a feeling of travel and sourced some steam train sounds from freesound. Towards the end of the track I layered other synth lines and a church organ as the train reaches its destination, the salt cathedral. \n\nHowever, the more I worked on the track, It brought back memories of a journey I made many years ago on the little train that takes people up Yr Wyddfa. So a little nod to this is the tune to Hen Wlad Fy Nhadau that comes in at the end of the track.\n\nMany of the tracks and audio pieces I create are based on memories and this is no exception. From the moment that I first heard this soundfile, I thought it sounded very much like a little steam train chugging up a very steep mountainside, whether in South America or my homeland, Wales.",
+    "Country": "Colombia",
+    "Cultural group": "Chocó",
+    "Year": 1965,
+    "Type ": "Music"
+  },
+  {
+    "Number": 65,
+    "City title": "Women singing",
+    "City artist": "Nicholas Justin ALLEN",
+    "City description": "From the sound collections of the Pitt Rivers Museum, University of Oxford, being from a collection of reel-to-reel recordings of music and spoken language (principally Thulung Rai) made by anthropologist Nicholas Allen in Nepal and India between 1970 and 1981",
+    "Memory title": "Bari women chanting",
+    "Memory artist": "Paul Beaudoin",
+    "Memory description": "While as Artist-in-residence at the Alice Boner Institute in Varanasi, India, I was lucky to hear chanting every day - nearly all day. The chanting is sacred - but it is also joyous. I wanted to capture that.",
+    "Country": "India",
+    "Cultural group": "Kinnauri",
+    "Year": 1981,
+    "Type ": "Song"
+  }
+]
