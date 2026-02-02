@@ -1,0 +1,47 @@
+{
+  "name": "century-of-sound",
+  "version": "1.0.0",
+  "description": "Century of Sound Audio Player",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build-mac": "electron-builder --mac",
+    "build-win": "electron-builder --win",
+    "build-linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.centuryofsound.app",
+    "productName": "Century of Sound",
+    "files": [
+      "main.js",
+      "index.html",
+      "Century_select.json",
+      "mp3/**/*",
+      "img/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.music",
+      "icon": "img/icon.icns"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "img/icon.ico"
+    },
+    "linux": {
+      "target": "AppImage",
+      "category": "Audio"
+    }
+  },
+  "keywords": [
+    "audio",
+    "player",
+    "music"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1"
+  }
+}
